@@ -125,39 +125,8 @@
 <script>
 export default {
     created() {},
-    data: () => ({
-        images: [
-            {
-                name: "slika-1",
-                path: "images/slike/1.jpg",
-            },
-            {
-                name: "slika-2",
-                path: "images/slike/2.jpg",
-            },
-            {
-                name: "slika-3",
-                path: "images/slike/3.webp",
-            },
-            {
-                name: "slika-4",
-                path: "images/slike/4.jpeg",
-            },
-            {
-                name: "slika-5",
-                path: "images/slike/5.jpeg",
-            },
-            {
-                name: "slika-6",
-                path: "images/slike/6.jpeg",
-            },
-        ],
-    }),
-    methods: {
-        napraviRezervaciju() {
-            window.location = "http://127.0.0.1:8000/user/rezervacija";
-        },
-    },
+    data: () => ({}),
+    methods: {},
 };
 </script>
 <style scoped>

@@ -3,6 +3,7 @@
 @section('sadrzaj')
 
 <div>
-    <naslovnica></naslovnica>
+    <naslovnica>
+         </naslovnica>
 </div>
 @endsection

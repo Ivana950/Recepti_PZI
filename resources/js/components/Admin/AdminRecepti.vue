@@ -1,194 +1,197 @@
 <template>
     <div>
         <div class="container">
-            <v-alert v-if="stolIzbrisan" type="success">
-                Stol uspješno izbrisan!
+            <v-alert v-if="ReceptIzbrisan" type="success">
+                Recept je izbrisan!
             </v-alert>
-            <div>
-                <v-row>
-                    <v-col class="text-right">
-                        <v-btn
-                            class="my-4"
-                            color="primary"
-                            width="150px"
-                            @click="dodajStol()"
-                            >DODAJ STOL</v-btn
-                        >
-                    </v-col>
-                </v-row>
+            <v-row>
+                <v-col cols="4" v-for="recept in recepti" :key="recept.id">
+                    <v-card class="mx-auto" max-width="400">
+                        <v-img :src="`${url}${recept.slika}`" height="260px" />
+                        <div class="my-2 d-flex justify-space-between">
+                            <v-card-title>{{ recept.naziv }}</v-card-title>
 
-                <div class="card-body table-responsive mb-16 text-center">
-                    <table class="table">
-                        <thead class="white--text">
-                            <tr class="blue">
-                                <th>Naziv</th>
-                                <th>Broj gostiju</th>
-                                <th>Status</th>
-                                <th>Uredi/Briši</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="stol in stolovi" :key="stol.id">
-                                <td>{{ stol.naziv }}</td>
-                                <td>{{ stol.broj_gostiju }}</td>
-                                <td>
-                                    <v-chip
-                                        class="ma-2"
-                                        :color="
-                                            stol.status === 'Dostupan'
-                                                ? 'green'
-                                                : 'red'
-                                        "
-                                        text-color="white"
-                                        >{{ stol.status }}
-                                    </v-chip>
-                                </td>
-                                <td>
-                                    <v-btn
-                                        color="primary"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#stolModal"
-                                        @click="dohvatiStol(stol)"
-                                    >
-                                        <v-icon left> mdi-pencil </v-icon>
-                                        Uredi
-                                    </v-btn>
-
-                                    <v-btn
-                                        depressed
-                                        color="error"
-                                        @click="izbrisiStol(stol.id)"
-                                    >
-                                        <v-icon left> mdi-delete </v-icon>
-                                        Izbriši
-                                    </v-btn>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <loading :loading="loading"></loading>
-            <div
-                class="modal fade"
-                id="stolModal"
-                tabindex="-1"
-                role="dialog"
-                aria-labelledby="stolModalLabel"
-                aria-hidden="true"
-            >
-                <div
-                    class="modal-dialog modal-dialog-centered modal-lg"
-                    role="document"
-                >
-                    <div class="modal-content">
-                        <div class="modal-header blue white--text">
-                            <h5 class="modal-title" id="stolModalLabel">
-                                Uredi
-                            </h5>
-                            <button
-                                type="button"
-                                class="close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close"
-                            >
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            <div class="mt-3">
+                                <v-btn
+                                    @click="urediRecept(recept)"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#receptModal"
+                                    color="primary"
+                                    fab
+                                    small
+                                    dark
+                                >
+                                    <v-icon>mdi-pencil</v-icon>
+                                </v-btn>
+                                <v-btn
+                                    @click="izbrisiRecept(recept.id)"
+                                    class="mx-3"
+                                    color="primary"
+                                    fab
+                                    small
+                                    dark
+                                >
+                                    <v-icon>mdi-delete</v-icon>
+                                </v-btn>
+                            </div>
                         </div>
-                        <div class="modal-body pa-5">
-                            <form @keydown="clearError">
-                                <div class="mb-5">
-                                    <input
-                                        id="naziv"
-                                        name="naziv"
-                                        placeholder="Naziv"
-                                        type="text"
-                                        v-model="form.naziv"
-                                        class="form-control"
-                                        :class="
-                                            hasError('naziv')
-                                                ? 'is-invalid'
-                                                : ''
-                                        "
-                                    />
-                                    <div
-                                        v-if="hasError('naziv')"
-                                        class="invalid-feedback"
-                                    >
-                                        {{ getError("naziv") }}
-                                    </div>
-                                </div>
+                        <v-card-subtitle class="pt-4">
+                            AUTOR: {{ recept.autor.name }}
+                        </v-card-subtitle>
 
-                                <div class="mb-5">
-                                    <input
-                                        id="broj_gostiju"
-                                        name="broj_gostiju"
-                                        placeholder="Broj gostiju"
-                                        type="integer"
-                                        v-model="form.broj_gostiju"
-                                        class="form-control"
-                                        :class="
-                                            hasError('broj_gostiju')
-                                                ? 'is-invalid'
-                                                : ''
-                                        "
-                                    />
-                                    <div
-                                        v-if="hasError('broj_gostiju')"
-                                        class="invalid-feedback"
-                                    >
-                                        {{ getError("broj_gostiju") }}
-                                    </div>
-                                </div>
+                        <v-card-subtitle class="pt-4">
+                            Vrijeme pripreme: {{ recept.vrijeme_pripreme }}
+                        </v-card-subtitle>
 
-                                <div class="mb-5">
-                                    <select
-                                        @change="clearError"
-                                        id="status"
-                                        name="status"
-                                        v-model="form.status"
-                                        class="form-select"
-                                        :class="
-                                            hasError('status')
-                                                ? 'is-invalid'
-                                                : ''
-                                        "
-                                    >
-                                        <option value="Dostupan">
-                                            Dostupan
-                                        </option>
-                                        <option value="Nedostupan">
-                                            Nedostupan
-                                        </option>
-                                    </select>
-                                    <div
-                                        v-if="hasError('status')"
-                                        class="invalid-feedback"
-                                    >
-                                        {{ getError("status") }}
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <v-alert
-                                v-if="stolSpremljen"
-                                type="success"
-                                height="36px"
-                                >Stol uspješno uređen!</v-alert
-                            >
-                            <v-btn
-                                depressed
-                                color="error"
-                                data-bs-dismiss="modal"
-                            >
-                                ZATVORI
+                        <v-card-text>
+                            <div>{{ recept.kategorija.naziv }}</div>
+
+                            <div>{{ recept.opis }}</div>
+                        </v-card-text>
+
+                        <v-card-actions>
+                            <v-card-subtitle class="pt-4">
+                                Sastojci i priprema
+                            </v-card-subtitle>
+                            <v-btn icon @click="show = !show">
+                                <v-icon>{{
+                                    show ? "mdi-chevron-up" : "mdi-chevron-down"
+                                }}</v-icon>
                             </v-btn>
+                        </v-card-actions>
 
-                            <v-btn @click="spremiStol()" color="primary"
-                                >SPREMI</v-btn
-                            >
-                        </div>
+                        <v-expand-transition>
+                            <div v-show="show">
+                                <v-divider></v-divider>
+                                <v-card-subtitle class="pt-4">
+                                    Sastojci:
+                                </v-card-subtitle>
+                                <v-card-text>
+                                    {{ recept.sastojci }}
+                                </v-card-text>
+                                <v-divider></v-divider>
+                                <v-card-subtitle class="pt-4">
+                                    Priprema:
+                                </v-card-subtitle>
+                                <v-card-text>
+                                    {{ recept.priprema }}
+                                </v-card-text>
+                            </div>
+                        </v-expand-transition>
+                    </v-card>
+                </v-col>
+            </v-row>
+        </div>
+        <div
+            class="modal fade"
+            id="receptModal"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="receptModalLabel"
+            aria-hidden="true"
+        >
+            <div
+                class="modal-dialog modal-dialog-centered modal-md"
+                role="document"
+            >
+                <div class="modal-content">
+                    <div class="modal-header blue white--text">
+                        <h5 class="modal-title" id="receptModalLabel">Uredi</h5>
+                        <button
+                            type="button"
+                            class="close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                        >
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body pa-5">
+                        <form>
+                            <div class="mb-5">
+                                <v-text-field
+                                    id="naziv"
+                                    name="naziv"
+                                    label="Naziv"
+                                    type="text"
+                                    v-model="form.naziv"
+                                />
+                            </div>
+                            <div class="mb-5">
+                                <v-text-field
+                                    id="sastojci"
+                                    name="sastojci"
+                                    label="Sastojci"
+                                    type="text"
+                                    v-model="form.sastojci"
+                                />
+                            </div>
+                            <div class="mb-5">
+                                <v-text-field
+                                    id="opis"
+                                    name="opis"
+                                    label="Kratki opis jela"
+                                    type="text"
+                                    v-model="form.opis"
+                                />
+                            </div>
+                            <div class="mb-5">
+                                <v-text-field
+                                    id="priprema"
+                                    name="priprema"
+                                    label="Priprema"
+                                    type="text"
+                                    v-model="form.priprema"
+                                />
+                            </div>
+                            <div class="mb-5">
+                                <v-text-field
+                                    id="vrijeme_pripreme"
+                                    name="vrijeme_pripreme"
+                                    label="Vrijeme pripreme"
+                                    type="text"
+                                    v-model="form.vrijeme_pripreme"
+                                />
+                            </div>
+                            <div class="mb-5">
+                                <v-select
+                                    id="kategorija_id"
+                                    name="kategorija_id"
+                                    v-model="form.kategorija_id"
+                                    :items="kategorije"
+                                    item-text="naziv"
+                                    item-value="id"
+                                    label="Kategorija"
+                                    required
+                                ></v-select>
+                            </div>
+
+                            <div class="mb-5">
+                                <input
+                                    type="file"
+                                    id="slika"
+                                    name="slika"
+                                    class="form-control"
+                                    @change="izabranaSlika"
+                                />
+                            </div>
+                            <img
+                                :src="`${form.slika}`"
+                                class="figure-img img-fluid"
+                                style="max-height: 300px"
+                            />
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <v-alert v-if="receptDodan" type="success" height="36px"
+                            >Meni uspješno uređen!</v-alert
+                        >
+                        <v-btn depressed color="error" data-bs-dismiss="modal">
+                            ZATVORI
+                        </v-btn>
+                        <v-btn @click="spremiRecept()" color="primary"
+                            >SPREMI</v-btn
+                        >
                     </div>
                 </div>
             </div>
@@ -199,89 +202,109 @@
 <script>
 export default {
     created() {
-        this.dohvatiStolove();
+        this.dohvatiRecepte();
+        this.dohvatiKategorije();
     },
     data: () => ({
-        stolovi: [],
+        recepti: [],
+        kategorije: [],
         form: {
             id: "",
             naziv: "",
-            broj_gostiju: "",
-            status: "",
+            sastojci: "",
+            opis: "",
+            priprema: "",
+            vrijeme_pripreme: "",
+            kategorija_id: "",
+            korisnik_id: "",
+            slika: "",
         },
+        brisiRecept: {
+            id: "",
+        },
+        url: "/images/",
         loading: false,
-        stolSpremljen: false,
-        stolIzbrisan: false,
-        errors: {},
+        show: false,
+        receptDodan: false,
+        ReceptIzbrisan: false,
     }),
     methods: {
-        dohvatiStolove() {
-            this.loading = true;
+        dohvatiRecepte() {
             axios
-                .get("http://127.0.0.1:8000/stolovi")
+                .get("http://127.0.0.1:8000/recepti")
                 .then((response) => {
-                    this.loading = false;
-                    this.stolovi = response.data.stolovi;
+                    this.recepti = response.data.recepti;
                 })
                 .catch((e) => {
                     console.log("Nešto pošlo krivo! Greška=" + e);
                 });
         },
-        dohvatiStol(stol) {
-            this.stolSpremljen = false;
+        dohvatiKategorije() {
+            axios
+                .get("http://127.0.0.1:8000/kategorije")
+                .then((response) => {
+                    this.kategorije = response.data.kategorije;
+                })
+                .catch((e) => {
+                    console.log("Nešto pošlo krivo! Greška=" + e);
+                });
+        },
+        urediRecept(recept) {
+            console.log(this.form.korisnik_id);
             this.form = {
-                id: stol.id,
-                naziv: stol.naziv,
-                broj_gostiju: stol.broj_gostiju,
-                status: stol.status,
+                id: recept.id,
+                naziv: recept.naziv,
+                sastojci: recept.sastojci,
+                opis: recept.opis,
+                priprema: recept.priprema,
+                vrijeme_pripreme: recept.vrijeme_pripreme,
+                kategorija_id: recept.kategorija_id,
+                korisnik_id: recept.autor.id,
+                slika: "",
             };
         },
-        dodajStol() {
-            window.location = "http://127.0.0.1:8000/admin/stolovi/dodaj";
+        izabranaSlika(event) {
+            let file = event.target.files[0];
+            let reader = new FileReader();
+            reader.onloadend = () => {
+                this.form.slika = reader.result;
+            };
+            reader.readAsDataURL(file);
         },
-        spremiStol() {
+        spremiRecept() {
             axios
                 .post(
-                    "http://127.0.0.1:8000/admin/stolovi/uredi/" + this.form.id,
+                    "http://127.0.0.1:8000/admin/recept/uredi/" + this.form.id,
                     this.form
                 )
                 .then(() => {
-                    this.stolSpremljen = true;
+                    this.receptDodan = true;
                     setTimeout(() => {
-                        this.stolSpremljen = false;
+                        this.receptDodan = false;
                     }, 4000);
-                    this.dohvatiStolove();
-                    console.log("Stol je dodan!");
+                    this.dohvatiRecepte();
                 })
                 .catch((e) => {
-                    if (e.response.status == 422) {
-                        this.errors = e.response.data.errors;
-                    }
                     console.log("Nešto pošlo krivo! Greška=" + e);
                 });
         },
-        izbrisiStol(id) {
+        izbrisiRecept(id) {
             axios
-                .get("http://127.0.0.1:8000/admin/stolovi/izbrisi/" + id)
+                .get("http://127.0.0.1:8000/admin/recept/izbrisi/" + id)
                 .then(() => {
-                    this.dohvatiStolove();
-                    this.stolIzbrisan = true;
+                    this.dohvatiRecepte();
+                    this.receptIzbrisan = true;
                     setTimeout(() => {
-                        this.stolIzbrisan = false;
+                        this.receptIzbrisan = false;
                     }, 4000);
                 })
                 .catch((err) => {
                     console.log(err);
                 });
         },
-        hasError(fieldName) {
-            return fieldName in this.errors;
-        },
-        getError(fieldName) {
-            return this.errors[fieldName][0];
-        },
-        clearError(event) {
-            delete this.errors[event.target.name];
+        reserve() {
+            this.loading = true;
+            setTimeout(() => (this.loading = false), 2000);
         },
     },
 };
@@ -291,12 +314,16 @@ export default {
     font-size: 12px;
 }
 .container {
-    width: 80%;
+    width: 100%;
 }
 .v-alert {
     font-size: 14px;
     margin: 0;
     display: flex;
     align-items: center;
+}
+.theme--light.v-card > .v-card__subtitle,
+.theme--light.v-card > .v-card__text {
+    color: rgb(0 0 0 / 81%);
 }
 </style>

@@ -1,0 +1,54 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+use App\Http\Controllers\Controller;
+
+use App\Models\Recept;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Intervention\Image\Facades\Image;
+
+
+class ReceptController extends Controller
+{
+    public function index()
+    {
+        return view('admin.recepti');
+    }
+
+    public function urediRecept(Request $request, $id)
+    {
+        $recept = Recept::findOrFail($id);
+
+        if ($request->slika) {
+            if ($recept->slika) {
+                unlink(public_path('images/' . $recept->slika));
+            }
+            $slika = time() . '.' . explode('/', explode(':', substr($request->slika, 0, strpos($request->slika, ';')))[1])[1];
+
+            Image::make($request->slika)->save(public_path('images/' . $slika));
+        } else {
+            $slika = $recept->slika;
+        }
+
+        $recept = Recept::find($id);
+        $recept->naziv = $request->naziv;
+        $recept->sastojci = $request->sastojci;
+        $recept->opis = $request->opis;
+        $recept->priprema = $request->priprema;
+        $recept->vrijeme_pripreme =  $request->vrijeme_pripreme;
+        $recept->kategorija_id =  $request->kategorija_id;
+        $recept->korisnik_id = $recept->korisnik_id;
+        $recept->slika = $slika;
+        $recept->save();
+
+        return $recept;
+    }
+
+    public function izbrisiRecept($id)
+    {
+        $recept = Recept::findOrFail($id);
+        unlink(public_path('images/' . $recept->slika));
+        Recept::where('id', $id)->delete();
+    }
+}

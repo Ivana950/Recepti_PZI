@@ -66,18 +66,16 @@
                 </div>
             </v-col>
             <v-col cols="4">
-                <img src="/images/img/bg-img/add.png" width="100%" />
-                <div class="subscribe mt-16">
+                <img src="/images/img/bg-img/add.png" alt="" />
+                <div class="subscribe">
                     <div>
                         <input
                             type="text"
-                            class="form-control mb-8"
+                            class="form-select"
                             placeholder="email@gmail.com"
                         />
-                        <v-btn class="green text-white" block
-                            >Pretplati se
-                        </v-btn>
-                        <p class="text-white mt-8">
+                        <v-btn class="mx-10" block>Pretplati se </v-btn>
+                        <p>
                             Lorem ipsum dolor sit amet consectetur adipisicing
                             elit. Ex minus, officia veniam molestias impedit non
                             cum? Vitae est accusantium alias fugiat veritatis
@@ -93,7 +91,7 @@
 <script>
 export default {
     created() {
-        this.dohvatiMeni();
+        this.dohvatiRecepte();
     },
     data: () => ({
         recepti: [],
@@ -102,7 +100,7 @@ export default {
         selection: 1,
     }),
     methods: {
-        dohvatiMeni() {
+        dohvatiRecepte() {
             axios
                 .get("http://127.0.0.1:8000/recepti")
                 .then((response) => {
@@ -114,7 +112,6 @@ export default {
         },
         reserve() {
             this.loading = true;
-
             setTimeout(() => (this.loading = false), 2000);
         },
     },
@@ -153,13 +150,10 @@ export default {
     color: rgb(0 0 0 / 81%);
 }
 .subscribe {
-    display: flex;
     height: 500px;
     background-image: url(/images/img/bg-img/bg1.jpg);
     background-position: center center;
     background-size: cover;
     background-repeat: no-repeat;
-    align-items: center;
-    padding: 20px;
 }
 </style>
