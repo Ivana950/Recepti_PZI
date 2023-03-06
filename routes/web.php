@@ -8,12 +8,20 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+# ADMIN RUTE
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.', 'middleware' => ['isAdmin']], function () {
 
     Route::get('/', 'AdminController@index')->name('index');
     Route::get('/kategorije', 'KategorijaController@index')->name('kategorije');
+    Route::post('/kategorija/uredi/{id}', 'KategorijaController@urediKategoriju')->name('kategorija.uredi');
+    Route::get('/kategorija/izbrisi/{id}', 'KategorijaController@izbrisiKategoriju');
+    Route::get('/kategorija/dodaj', 'KategorijaController@novaKategorija');
+    Route::post('/kategorija/dodaj', 'KategorijaController@dodajKategoriju');
+ 
 
 
+    Route::get('/recept/dodaj', 'ReceptController@noviRecept');
+    Route::post('/recept/dodaj', 'ReceptController@dodajRecept');
     Route::post('/recept/uredi/{id}', 'ReceptController@urediRecept');
     Route::get('/recept/izbrisi/{id}', 'ReceptController@izbrisiRecept');
 

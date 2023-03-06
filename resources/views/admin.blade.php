@@ -2,11 +2,11 @@
 
 @section('content')
 
-<body class="sidebar-mini" style="height: auto;">
+<body>
 <v-row>
   <v-col>
-  <v-system-bar app>
-      <v-spacer></v-spacer>
+
+     
 
       
     </v-system-bar>
@@ -17,15 +17,15 @@
     >
       <v-sheet
         color="grey lighten-4"
-        class="pa-4"
+        class="pa-4 text-center
+        "
       >
-        <v-avatar
-          class="mb-4"
-          color="grey darken-1"
-          size="64"
-        ></v-avatar>
+      
+        <img
+        src="/images/img/core-img/logo.png"></img>
 
-        <div>john@vuetifyjs.com</div>
+   
+
       </v-sheet>
 
       <v-divider></v-divider>

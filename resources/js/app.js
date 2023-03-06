@@ -14,27 +14,17 @@ Vue.component(
     require("./components/Admin/AdminRecepti.vue").default
 );
 Vue.component(
+    "admin-novi-recept",
+    require("./components/Admin/AdminNoviRecept.vue").default
+);
+
+Vue.component(
     "admin-kategorije",
     require("./components/Admin/AdminKategorije.vue").default
 );
-
-Vue.component("stolovi", require("./components/Admin/Stolovi.vue").default);
 Vue.component(
-    "dodaj-stol",
-    require("./components/Admin/DodajStol.vue").default
-);
-Vue.component("meni", require("./components/Admin/Meni.vue").default);
-Vue.component(
-    "dodaj-meni",
-    require("./components/Admin/DodajMeni.vue").default
-);
-Vue.component(
-    "rezervacije",
-    require("./components/Admin/Rezervacije.vue").default
-);
-Vue.component(
-    "dodaj-rezervaciju",
-    require("./components/Admin/DodajRezervaciju.vue").default
+    "admin-dodaj-kategoriju",
+    require("./components/Admin/DodajKategoriju.vue").default
 );
 
 //USER KOMPONENTE

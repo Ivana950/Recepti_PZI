@@ -5,6 +5,19 @@
                 Recept je izbrisan!
             </v-alert>
             <v-row>
+                <v-col class="text-right">
+                    <v-btn
+                        class="my-5"
+                        @click="dodajRecept()"
+                        fab
+                        dark
+                        color="blue-grey darken-3"
+                    >
+                        <v-icon dark> mdi-plus </v-icon>
+                    </v-btn>
+                </v-col>
+            </v-row>
+            <v-row>
                 <v-col cols="4" v-for="recept in recepti" :key="recept.id">
                     <v-card class="mx-auto" max-width="400">
                         <v-img :src="`${url}${recept.slika}`" height="260px" />
@@ -301,6 +314,10 @@ export default {
                 .catch((err) => {
                     console.log(err);
                 });
+        },
+        dodajRecept() {
+            window.location = window.location =
+                "http://127.0.0.1:8000/admin/recept/dodaj";
         },
         reserve() {
             this.loading = true;
